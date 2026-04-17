@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Special of TK</title>
+
+  <!-- Metadata สำหรับ Social Share -->
+  <meta property="og:title" content="Special of TK" />
+  <meta property="og:description" content="Hello! My Name is T-Milk." />
+  <meta property="og:url" content="https://specialoftk.vercel.app/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Special of TK" />
+  <meta name="twitter:description" content="Hello! My Name is T-Milk." />
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    :root{
+      /* =========================
+         BACKGROUND COLORS
+      ========================== */
+      --bg-top: #FFF5E8;
+      --bg-bottom: #8A5D3E;
+      --bg-top-start: 0%;
+      --bg-top-end: 70%;
+      --bg-bottom-end: 100%;
+
+      --card-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI";
+      color:#fff;
+      background:linear-gradient(
+        to bottom,
+        var(--bg-top) var(--bg-top-start),
+        var(--bg-top) var(--bg-top-end),
+        var(--bg-bottom) var(--bg-bottom-end)
+      );
+      cursor: auto;
+    }
+
+    .page{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:100%;
+    }
+
+    .page.ar-active{ background:transparent; }
+
+    .viewer-card{
+      width:100%;
+      max-width:900px;
+      height:65vh;
+      background:transparent;
+      border-radius:20px;
+      box-shadow: var(--card-shadow);
+      overflow:hidden;
+    }
+
+    model-viewer{
+      width:100%;
+      height:100%;
+      background:transparent;
+      shadow-intensity:1;
+      shadow-softness:0.9;
+      cursor: auto !important;
+    }
+
+    .egg-day-wrap{
+      margin-top: 3vh;
+      display:flex;
+      justify-content:center;
+      width:100%;
+    }
+
+    .glass {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: .55em;
+      padding: .5em 1.1em;
+      border-radius: 16px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+
+    .glass .label{
+      font-weight:700;
+      font-size: clamp(14px, 2vw, 20px);
+      color:#fff;
+      white-space: nowrap;
+    }
+
+    .glass .evo{
+      height: 1.2em;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .logo-left, .logo-right{
+      position:fixed;
+      bottom:1vh;
+    }
+
+    .logo-left{ left:1vw; }
+    .logo-right{ right:1vw; }
+
+    .logo-left img, .logo-right img{
+      height:3vh;
+      width:auto;
+      object-fit:contain;
+    }
+
+    .popup-overlay {
+      display: none !important;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="page" id="page-root">
+    <div class="viewer-card">
+      <model-viewer id="mv"
+        src="/assets/modeltest.glb"
+        ios-src="/assets/modeltest.usdz"
+        alt="Special of TK"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        environment-image="neutral"
+        camera-controls
+        autoplay
+        exposure="1"
+        shadow-intensity="1"
+        shadow-softness="0.9">
+      </model-viewer>
+    </div>
+
+    <div class="egg-day-wrap">
+      <div class="glass">
+        <img class="evo" src="/assets/imageevo.png" alt="Evolution">
+        <span class="label"> T-MILK </span>
+      </div>
+    </div>
+
+    <div class="logo-left"><img src="/assets/logoimage1.png" alt="Logo Left"></div>
+    <div class="logo-right"><img src="/assets/logoimage2.png" alt="Logo Right"></div>
+  </div>
+
+  <div class="popup-overlay" id="popupOverlay" style="display:none;"></div>
+
+  <script>
+    /* =========================================================
+       THAI RELEASE DATE SETTING
+       ใส่ "วันที่" ที่ต้องการตรงนี้ได้เลย
+       ระบบจะสลับโมเดลตอน 18:00:00 ของวันนั้นตามเวลาไทย
+       รูปแบบวันที่: YYYY-MM-DD
+       ตัวอย่าง: 2026-04-20
+    ========================================================= */
+    const RELEASE_DATE_THAI = "2026-04-17";
+
+    /* =========================================================
+       MODEL FILE NAMES
+       ใช้ชื่อไฟล์แบบไม่ต้องใส่นามสกุล
+       ระบบจะต่อเป็น .glb และ .usdz ให้เองอัตโนมัติ
+    ========================================================= */
+    const FAKE_MODEL_NAME = "modeltest";
+    const REAL_MODEL_NAME = "model01";
+
+    function getBangkokNowParts() {
+      const formatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Bangkok",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
+      });
+
+      const parts = formatter.formatToParts(new Date());
+      const map = {};
+
+      for (const part of parts) {
+        if (part.type !== "literal") {
+          map[part.type] = part.value;
+        }
+      }
+
+      return {
+        year: map.year,
+        month: map.month,
+        day: map.day,
+        hour: map.hour,
+        minute: map.minute,
+        second: map.second
+      };
+    }
+
+    function shouldUseRealModel() {
+      const nowThai = getBangkokNowParts();
+      const nowThaiNumber = Number(
+        `${nowThai.year}${nowThai.month}${nowThai.day}${nowThai.hour}${nowThai.minute}${nowThai.second}`
+      );
+
+      const releaseDateCompact = RELEASE_DATE_THAI.replaceAll("-", "");
+      const releaseThaiNumber = Number(`${releaseDateCompact}180000`);
+
+      return nowThaiNumber >= releaseThaiNumber;
+    }
+
+    function applyScheduledModel() {
+      const mv = document.getElementById("mv");
+      if (!mv) return;
+
+      const useRealModel = shouldUseRealModel();
+
+      const selectedModelName = useRealModel ? REAL_MODEL_NAME : FAKE_MODEL_NAME;
+      const glbPath = `/assets/${selectedModelName}.glb`;
+      const usdzPath = `/assets/${selectedModelName}.usdz`;
+
+      const currentGlb = mv.getAttribute("src");
+      const currentUsdz = mv.getAttribute("ios-src");
+
+      if (currentGlb !== glbPath) {
+        mv.setAttribute("src", glbPath);
+      }
+
+      if (currentUsdz !== usdzPath) {
+        mv.setAttribute("ios-src", usdzPath);
+      }
+
+      mv.dismissPoster?.();
+      mv.load?.();
+
+      console.log("✅ Current model:", selectedModelName);
+      console.log("✅ GLB:", glbPath);
+      console.log("✅ USDZ:", usdzPath);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const popup = document.getElementById("popupOverlay");
+      if (popup) popup.style.display = "none";
+
+      applyScheduledModel();
+
+      /* เช็กซ้ำทุก 1 วินาที เผื่อเว็บเปิดค้างไว้จนถึงเวลา */
+      setInterval(applyScheduledModel, 1000);
+
+      console.log("✅ Popup system disabled");
+      console.log("✅ Thai scheduled model switch enabled");
+    });
+  </script>
+</body>
+</html>
